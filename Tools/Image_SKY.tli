@@ -1,0 +1,104 @@
+/**
+ *  @file Image_SKY.tli
+ *
+ *  @date 2012-5-3
+ *  @author Bonly
+ */
+#include "Image.h"
+#include "types_SKY.h"
+
+ResPool *imgPool = 0;
+
+#define IMGSEG
+
+/**
+ * @def 定义变量
+ */
+#define RES(O,F) Obj V_##O;
+#include "Resource.inc"
+#undef RES
+
+/**
+ * @def 定义数组List
+ */
+#define RES(O,F) (Obj*)&V_##O,
+Obj*  imgList[]={
+#include "Resource.inc"
+};
+#undef RES
+
+/**
+ * @def 定义初始化函数
+ * 
+ */
+#define RES(X,F) \
+int load_##X(void* p) {\
+    if(V_##X.obj == 0) \
+    {\
+       T_IMG* tmp = (T_IMG*)malloc(sizeof(T_IMG)); \
+       mrc_memset(tmp, 0, sizeof(T_IMG)); \
+       tmp->pImg = (uint16*)mrc_readFileFromMrp(#F, &tmp->dataLen, 0);\
+       V_##X.obj = tmp; \
+    }\
+    if(V_##X.obj == 0) return 1;else return 0; \
+}
+#include "Resource.inc"
+#undef RES
+
+/**
+ * 补完整结构数据
+ */
+static void fix_relation()
+{
+    int i = 0;
+#define IMGSEG
+#define RES(X,F) \
+    imgList[i]->ID = i; \
+    imgList[i]->create = load_##X; \
+    ++i;
+#include "Resource.inc"
+#undef RES
+#undef IMGSEG
+}
+#undef IMGSEG
+
+
+static void delObj(int idx); ///< 删除对象
+
+/** 
+ * 初始化
+ */
+static int init(ResPool *resp)
+{
+    resp->List = imgList;
+    resp->res_max = RES_MAX;
+    resp->delObj = delObj;
+    resp->fix_relation = fix_relation;
+
+    return 0;
+}
+
+/**
+ * 删除对象
+ */
+static void delObj(int idx) 
+{
+    if(idx >= imgPool->res_max || idx < 0) return;
+    if (imgPool->List[idx]->obj)
+    {
+      T_IMG* tmp = (T_IMG*)imgPool->List[idx]->obj;
+      mrc_freeFileData(tmp->pImg, tmp->dataLen);
+      free((Img*)imgPool->List[idx]->obj);
+      imgPool->List[idx]->obj = 0;
+    }
+}
+
+Img* GETIMG(int x)
+{
+   return (Img*)RESP(&imgPool, init)->getObj(x)->obj;
+}
+
+void DELIMG(int x)
+{
+   RESP(&imgPool, init)->delObj(x);
+}

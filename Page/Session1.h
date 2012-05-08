@@ -7,7 +7,7 @@
 
 #ifndef SESSION1_H_
 #define SESSION1_H_
-#include "../Frame/Page.h"
+#include "../Tools/Page.h"
 
 class Session1
 {

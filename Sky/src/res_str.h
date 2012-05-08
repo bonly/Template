@@ -1,0 +1,23 @@
+
+#ifndef _RES_STR_H_
+#define _RES_STR_H_
+
+#define STR_PAY_INFO 0
+#define STR_PAY_POINT_COUNT 1
+#define STR_PAYREG_POINT_ID 2
+#define STR_PAY_POINT_LINES 3
+#define STR_DAYPAY_MAX 4
+#define STR_PAY_POINT1_VALUE 5
+#define STR_PAY_POINT1_TEXT 6
+#define STR_PAY_POINT1_ID 7
+#define STR_PAY_POINT2_VALUE 8
+#define STR_PAY_POINT2_TEXT 9
+#define STR_PAY_POINT2_ID 10
+#define STR_GAME_TEXT 11
+#define STR_GAME_TITLE 12
+#define STR_GAME_RETURN 13
+#define STR_HELLO_STR 14
+
+#define RES_STRING_COUNT 15
+
+#endif

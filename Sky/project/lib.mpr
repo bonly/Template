@@ -1,0 +1,32 @@
+[information]
+projectname=TPL.mrp
+filename=TPL.mrp
+appname=TPL
+appid=11
+version=1000
+visible=1
+cpu=3
+vendor=sunrise
+description=sunrise
+include= ${MRPBUILDER_HOME}\..\include,${MRPBUILDER_HOME}\..\include\plugins
+output_format = lib
+config=mtk240,spr240
+
+[config_mtk240]
+output= ..\lib\code_mtk240.lib
+bmp_mode=normal
+c_compiler=thumb
+plat=mtk
+
+[config_spr240]
+output= ..\lib\code_spr240.lib
+bmp_mode=spreadtrum
+c_compiler=thumb
+plat=spreadtrum
+
+
+[files]
+file01 = ..\src\game.c
+file02 = ..\src\i18n.c
+file03 = ..\src\main.c
+

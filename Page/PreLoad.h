@@ -7,7 +7,7 @@
 
 #ifndef PRELOAD_H_
 #define PRELOAD_H_
-#include "../Frame/Page.h"
+#include "../Tools/Page.h"
 
 Page* createPreLoad(); ///< 创建预加预页面函数
 

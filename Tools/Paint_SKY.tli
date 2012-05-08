@@ -1,0 +1,31 @@
+/**
+ *  @file Paint_SKY.tli
+ *
+ *  @date 2012-5-7
+ *  @author Bonly
+ */
+#pragma warning(disable:4244)
+#include "Paint.h"
+
+static Paint* paint = 0;
+
+Paint* instance_paint()
+{
+  if(0 == paint)
+  {
+    paint = (Paint*)SafeMalloc(sizeof(Paint));
+    return paint;
+  }
+  return paint;
+}
+
+void destory_paint()
+{
+  if(paint)
+    SafeFree ((Paint*)paint);
+}
+
+bool Paint::drawImage(Img *pJImage, int iX, int iY, int iAchor)
+{
+  return (bool)mrc_bitmapShowEx(pJImage->pImg, iX, iY, pJImage->width, pJImage->width, pJImage->height,BM_TRANSPARENT,0,0);
+}

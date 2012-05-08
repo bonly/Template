@@ -4,13 +4,14 @@
  *  @date 2012-2-27
  *  @author Bonly
  */
-#include "../Frame/Image.h"
-#include "../Frame/pre.h"
-#include "../Frame/Container.h"
+#include "../Tools/Image.h"
+#include "../Tools/pre.h"
+#include "../Tools/Container.h"
 #include "PreLoad.h"
-#include <stdio.h>
+#include "../Tools/Paint.h"
+//#include <stdio.h>
 
-extern Graphics gpDC;
+//extern Graphics gpDC;
 static Page page;
 
 /**
@@ -38,7 +39,8 @@ static void running()
  */
 static void onPaint()
 {
-    gpDC->drawImage(GETIMG(ID_background), 0, 0, ACHOR_LT);
+    //gpDC->drawImage(GETIMG(ID_background), 0, 0, ACHOR_LT);
+    PAINT->drawImage(GETIMG(ID_background), 0, 0, ACHOR_LT);
     ShowCont(ID_test);
 }
 
@@ -51,6 +53,10 @@ static void onDestory()
     DELIMG(ID_background);
 }
 
+bool OnPointerPressed(int x, int y)
+{
+   return true;
+}
 /**
  * 创建页面
  * @return Page* 页面结构的指针
@@ -61,11 +67,13 @@ Page* createPreLoad()
    page.onDestory = onDestory;
    page.onPaint = onPaint;
    page.running = running;
+   page.OnPointerPressed = OnPointerPressed;
    return &page;
 }
 
 bool click(int x, int y)
 {
-  printf("test ok\r\n");
+  //printf("test ok\r\n");
   return true;
 }
+

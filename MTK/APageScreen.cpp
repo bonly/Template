@@ -3,10 +3,9 @@
  */
 #include "APageScreen.h"
 #include "osport.h"
-#include "jport.h"
-#include "../Frame/pre.h"
-#include "../Frame/Image.h"
-#include "../Frame/Container.h"
+#include "../Tools/pre.h"
+#include "../Tools/Image.h"
+#include "../Tools/Container.h"
 //全局的dc
 Graphics     gpDC;
 //全局的shell
