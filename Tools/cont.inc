@@ -1,4 +1,6 @@
+#if WIN32 
 #pragma warning(disable:4002)
+#endif
 //按钮标识,
 //         X,Y,W,H,UP图片ID,DOWN图片ID,OVER图片ID,
 //         OnPointerPressed函数,OnPointerDragged函数,OnPointerReleased函数,

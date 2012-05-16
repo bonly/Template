@@ -1,5 +1,7 @@
-#if __MTK__
+#ifdef __MTK__
 #include "Image_MTK.tli"
-#elif __SKY__
+#endif
+
+#ifdef __SKY__
 #include "Image_SKY.tli"
 #endif

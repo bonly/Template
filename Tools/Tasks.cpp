@@ -6,7 +6,7 @@
  */
 #include "pre.h"
 //#include <stdlib.h>
-#include <aeestdlib.h>
+//#include <aeestdlib.h>
 #include "Tasks.h"
 #include "Page.h"
 
@@ -137,6 +137,64 @@ static void onPaint(void *p)
   return ;
 }
 
+static bool OnPointerPressed(int x, int y)
+{
+  if (TASKS->page_count < 1) ///只有一个页面(也就是页面列表为空),则退出
+        return false;
+  if (CURPAGE->page != 0 && CURPAGE->page->OnPointerPressed != 0)
+  {
+    CURPAGE->page->OnPointerPressed(x, y);
+    return true;
+  }
+  return false;
+}
+
+static bool OnPointerDragged(int x, int y)
+{
+  if (TASKS->page_count < 1) ///只有一个页面(也就是页面列表为空),则退出
+        return false;
+  if (CURPAGE->page != 0 && CURPAGE->page->OnPointerDragged != 0)
+  {
+    CURPAGE->page->OnPointerDragged(x, y);
+    return true;
+  }
+  return false;
+}
+static bool OnPointerReleased(int x, int y)
+{
+  if (TASKS->page_count < 1) ///只有一个页面(也就是页面列表为空),则退出
+        return false;
+  if (CURPAGE->page != 0 && CURPAGE->page->OnPointerReleased != 0)
+  {
+    CURPAGE->page->OnPointerReleased(x, y);
+    return true;
+  }
+  return false;
+}
+
+static bool OnKeyReleased(int keyCode)
+{
+  if (TASKS->page_count < 1) ///只有一个页面(也就是页面列表为空),则退出
+        return false;
+  if (CURPAGE->page != 0 && CURPAGE->page->OnKeyReleased != 0)
+  {
+    CURPAGE->page->OnKeyReleased(keyCode);
+    return true;
+  }
+  return false;
+}
+static bool OnKeyPressed(int keyCode)
+{
+  if (TASKS->page_count < 1) ///只有一个页面(也就是页面列表为空),则退出
+        return false;
+  if (CURPAGE->page != 0 && CURPAGE->page->OnKeyPressed != 0)
+  {
+    CURPAGE->page->OnKeyPressed(keyCode);
+    return true;
+  }
+  return false;
+}
+
 /**
  * 初始化任务
  * @return -1:失败 0:成功
@@ -160,7 +218,11 @@ static int init()
     tasks->get_page = get_page;
     tasks->run = run;
     tasks->onPaint = onPaint;
-    tasks->OnPointerPressed = &OnPointerPressed;
+    tasks->OnPointerPressed = OnPointerPressed;
+    tasks->OnPointerDragged = OnPointerDragged;
+    tasks->OnPointerReleased = OnPointerReleased;
+    tasks->OnKeyPressed = OnKeyPressed;
+    tasks->OnKeyReleased = OnKeyReleased;
     return 0;
 }
 
@@ -182,13 +244,4 @@ Tasks* get_tasks()
     return tasks;
 }
 
-static bool OnPointerPressed(int x, int y)
-{
-  if (TASKS->page_count < 1) ///只有一个页面(也就是页面列表为空),则退出
-        return false;
-  if (CURPAGE->page != 0)
-  {
-    CURPAGE->page->OnPointerPressed(x, y);
-  }
-  return true;
-}
+

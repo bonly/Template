@@ -6,6 +6,7 @@
 #include "../Tools/pre.h"
 #include "../Tools/Image.h"
 #include "../Tools/Container.h"
+#include "../Tools/Paint.h"
 //全局的dc
 Graphics     gpDC;
 //全局的shell
@@ -48,6 +49,7 @@ int CAPageScreen::OnDestroy(void)
     DELIMGPOOL();
     DELCONTPOOL();
     DELCONF();
+    DELPAINT();
     return 0;
 }
 
@@ -161,7 +163,7 @@ BOOL CAPageScreen::OnKeyPressed(int keyCode)
     if(AVK_SOFT1 == keyCode)
         destroyApp(false);
 
-    KeyPressedListen(keyCode);
+    KeyPressedListen(keyCode, CURPAGE->page);
 
     return TRUE;
 }
@@ -173,7 +175,7 @@ BOOL CAPageScreen::OnKeyReleased(int keyCode)
 
     int i = BrewKey2Java(keyCode);
 
-    KeyReleasedListen(keyCode);
+    KeyReleasedListen(keyCode, CURPAGE->page);
 
     return TRUE; //已处理KEY事件
 }
@@ -186,7 +188,7 @@ BOOL CAPageScreen::OnPointerPressed(int x, int y)
     //     m_pGlobal->m_pKey->setSavePointerPos(x, y); //设置记录Pointer_Down位置
     //     m_pGlobal->m_pKey->setPrePointerDnTime(currentTimeMillis());
 
-    PointerPressedListen(x,y);
+    PointerPressedListen(x,y,CURPAGE->page);
     BOOL bRet = FALSE;
 
     return bRet;
@@ -196,7 +198,7 @@ BOOL CAPageScreen::OnPointerDragged(int x, int y)
     //     m_pGlobal->m_pKey->pointerMove(x, y);
 
     BOOL bRet = FALSE;
-    PointerDraggedListen(x, y);
+    PointerDraggedListen(x, y,CURPAGE->page);
 
     return bRet;
 }
@@ -205,7 +207,7 @@ BOOL CAPageScreen::OnPointerReleased(int x, int y)
     //    m_pGlobal->m_pKey->pointerUp(x, y);
 
     BOOL bRet = FALSE;
-    PointerReleasedListen(x,y);
+    PointerReleasedListen(x,y,CURPAGE->page);
 
     return bRet;
 }

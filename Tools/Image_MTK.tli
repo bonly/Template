@@ -5,7 +5,6 @@
  *  @author Bonly
  */
 #include "Image.h"
-
 //#include <stdlib.h>
 #include <aeestdlib.h>
 
@@ -17,14 +16,14 @@ ResPool *imgPool = 0;
 /**
  * @def 定义变量
  */
-#define RES(O,F) Obj V_##O;
+#define RES(O,...) Obj *V_##O = 0;
 #include "Resource.inc"
 #undef RES
 
 /**
  * @def 定义数组List
  */
-#define RES(O,F) (Obj*)&V_##O,
+#define RES(O,...) (Obj*) V_##O,
 Obj*  imgList[]={
 #include "Resource.inc"
 };
@@ -34,11 +33,34 @@ Obj*  imgList[]={
  * @def 定义初始化函数
  * 
  */
-#define RES(X,F) \
+#define RES(X,P,F,T,W,H) \
 static int load_##X(void* p) {\
-    if(V_##X.obj == 0) \
-       V_##X.obj = Image_createImage(gpDC, #F);\
-       if(V_##X.obj == 0) return 1;else return 0; \
+    if(V_##X->obj == 0) \
+    {\
+       T_IMG *tmp = SafeNew T_IMG; \
+       if (tmp == 0 ) return 1; \
+       tmp->type = T; \
+       if (T == BM_COPY) \
+       { \
+         JImage *img = Image_createImage(gpDC, #P#F);\
+         if (img == 0) \
+            return 1; \
+         tmp->pImg = img; \
+         tmp->width = img->getWidth();\
+         tmp->height = img->getHeight();\
+       } \
+       if (T == BM_TRANSPARENT) \
+       { \
+         SxmAlphaImage* img = SxmCreateAlphaImage(#P#F); \
+         if (img == 0) \
+           return 1; \
+         tmp->pImg = img; \
+         tmp->width = W; \
+         tmp->height = H; \
+       } \
+       V_##X->obj = tmp; \
+    }\
+    if(V_##X->obj == 0) return 1;else return 0; \
 }
 #include "Resource.inc"
 #undef RES
@@ -50,7 +72,10 @@ static void fix_relation()
 {
     int i = 0;
 #define IMGSEG
-#define RES(X,F) \
+#define RES(X,...) \
+    V_##X = SafeNew  Obj; \
+    imgList[i] = V_##X; \
+    imgList[i]->obj = 0; \
     imgList[i]->ID = i; \
     imgList[i]->create = load_##X; \
     ++i;
@@ -82,14 +107,22 @@ static int init(ResPool *resp)
 static void delObj(int idx) 
 {
     if(idx >= imgPool->res_max || idx < 0) return;
-    if (imgPool->List[idx]->obj)
+    Img *tmpO = 0;
+    if (tmpO = (Img*)imgPool->List[idx]->obj)
     {
-      delete (Img*)imgPool->List[idx]->obj;
+      if (tmpO->pImg)
+      {
+        if (tmpO->type == BM_TRANSPARENT)
+          SxmDestoryAlphaImage((SxmAlphaImage*)tmpO->pImg);
+        if (tmpO->type == BM_COPY)
+          delete (JImage*)tmpO->pImg;
+      }
+      delete (Img*)tmpO;
       imgPool->List[idx]->obj = 0;
     } 
 }
 
-JImage* GETIMG(int x)
+Img* GETIMG(int x)
 {
    return (Img*)RESP(&imgPool, init)->getObj(x)->obj;
 }

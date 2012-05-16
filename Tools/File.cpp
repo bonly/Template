@@ -30,7 +30,8 @@ File::~File()
 {
     if (_File)
     {
-        close();
+      flush();
+      close();
     }
     --count;
     if (FileMgr && count == 0)

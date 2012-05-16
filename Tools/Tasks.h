@@ -43,6 +43,10 @@ struct _Tasks
         void (*run)(void*); ///< 运算页面处理逻辑
         void (*onPaint)(void*); ///< 渲染
         bool (*OnPointerPressed)(int x, int y);
+        bool (*OnPointerDragged)(int x, int y);
+        bool (*OnPointerReleased)(int x, int y);
+        bool (*OnKeyReleased)(int keyCode);
+        bool (*OnKeyPressed)(int keyCode);
 };
 /**
  * @enum 操作标识

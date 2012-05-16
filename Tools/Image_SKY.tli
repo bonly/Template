@@ -7,6 +7,8 @@
 #include "Image.h"
 #include "types_SKY.h"
 
+extern "C"{
+
 ResPool *imgPool = 0;
 
 #define IMGSEG
@@ -14,14 +16,14 @@ ResPool *imgPool = 0;
 /**
  * @def 定义变量
  */
-#define RES(O,F) Obj V_##O;
+#define RES(O,...) Obj *V_##O = 0;
 #include "Resource.inc"
 #undef RES
 
 /**
  * @def 定义数组List
  */
-#define RES(O,F) (Obj*)&V_##O,
+#define RES(O,...) (Obj*) V_##O,
 Obj*  imgList[]={
 #include "Resource.inc"
 };
@@ -31,16 +33,19 @@ Obj*  imgList[]={
  * @def 定义初始化函数
  * 
  */
-#define RES(X,F) \
+#define RES(X,P,F,T,W,H) \
 int load_##X(void* p) {\
-    if(V_##X.obj == 0) \
+    if(V_##X->obj == 0) \
     {\
        T_IMG* tmp = (T_IMG*)malloc(sizeof(T_IMG)); \
        mrc_memset(tmp, 0, sizeof(T_IMG)); \
+       tmp->width = W;\
+       tmp->height = H;\
+       tmp->tran = T;\
        tmp->pImg = (uint16*)mrc_readFileFromMrp(#F, &tmp->dataLen, 0);\
-       V_##X.obj = tmp; \
+       V_##X->obj = tmp; \
     }\
-    if(V_##X.obj == 0) return 1;else return 0; \
+    if(V_##X->obj == 0) return 1;else return 0; \
 }
 #include "Resource.inc"
 #undef RES
@@ -52,7 +57,10 @@ static void fix_relation()
 {
     int i = 0;
 #define IMGSEG
-#define RES(X,F) \
+#define RES(X,...) \
+    V_##X = SafeNew Obj; \
+    imgList[i] = V_##X; \
+    imgList[i]->obj = 0; \
     imgList[i]->ID = i; \
     imgList[i]->create = load_##X; \
     ++i;
@@ -101,4 +109,6 @@ Img* GETIMG(int x)
 void DELIMG(int x)
 {
    RESP(&imgPool, init)->delObj(x);
+}
+
 }

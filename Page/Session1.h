@@ -17,6 +17,7 @@ class Session1
         static int  init(); ///< 初始化函数指针
         static void onPaint(); ///< 渲染函数指针
         static void running(); ///< 处理游戏逻辑的函数指针
+        static bool sclick(int x, int y);
 
     public:
         Page  _page;

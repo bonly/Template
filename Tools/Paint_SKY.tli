@@ -4,16 +4,28 @@
  *  @date 2012-5-7
  *  @author Bonly
  */
+#if WIN32 
 #pragma warning(disable:4244)
+#endif
 #include "Paint.h"
 
 static Paint* paint = 0;
+static int drawImage(Img *pJImage, int iX, int iY);
 
 Paint* instance_paint()
 {
   if(0 == paint)
   {
     paint = (Paint*)SafeMalloc(sizeof(Paint));
+    paint->drawImage = drawImage;
+
+    ///获取屏幕分辨率
+    mr_screeninfo ms;
+    mrc_memset(&ms, 0, sizeof(mr_screeninfo));
+	  mrc_getScreenInfo(&ms);
+    paint->ScreenWidth = ms.width;
+    paint->ScreenHeight = ms.height;
+
     return paint;
   }
   return paint;
@@ -25,7 +37,9 @@ void destory_paint()
     SafeFree ((Paint*)paint);
 }
 
-bool Paint::drawImage(Img *pJImage, int iX, int iY, int iAchor)
+static int drawImage(Img *pJImage, int iX, int iY)
 {
-  return (bool)mrc_bitmapShowEx(pJImage->pImg, iX, iY, pJImage->width, pJImage->width, pJImage->height,BM_TRANSPARENT,0,0);
+  if (!(pJImage != 0 && pJImage->pImg !=0)) return -1;
+  return mrc_bitmapShowEx(pJImage->pImg, iX, iY, 
+    pJImage->width, pJImage->width, pJImage->height, pJImage->tran, 0,0);
 }

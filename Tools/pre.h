@@ -8,6 +8,9 @@
 #ifndef PRE_H_
 #define PRE_H_
 
+//#define __SKY__ 
+//#undef  __MTK__ 
+//#define WIN32 1
 
 #include "system.h"
 
@@ -20,7 +23,9 @@ extern "C"{
 #include "Page.h"
 #include "Tasks.h"
 
-
+#include "Paint.h"
+#include "Container.h"
+#include "Image.h"
 #ifdef __cplusplus
 }
 #endif

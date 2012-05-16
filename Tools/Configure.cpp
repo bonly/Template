@@ -6,7 +6,7 @@
  */
 #include "pre.h"
 //#include <stdlib.h>
-#include <aeestdlib.h>
+//#include <aeestdlib.h>
 #include "Configure.h"
 
 static Configure* conf = 0;

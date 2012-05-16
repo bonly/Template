@@ -6,7 +6,7 @@
  */
 #include "pre.h"
 #include "ResPool.h"
-#include <aeestdlib.h>
+//#include <aeestdlib.h>
 
 static ResPool* pool = 0; ///< 指向被操作池
 static Obj* getObj(int ID);
@@ -15,6 +15,20 @@ static int init(ResPool* resp)
 {
   resp->getObj = getObj;
   return 0;
+}
+
+/**
+ * 删除控制对象
+ */
+static void delCtl(ResPool* resp, int idx) 
+{
+    if (!resp) return;
+    if(idx >= resp->res_max || idx < 0) return;
+    if (resp->List[idx])
+    {
+      delete (Obj*)resp->List[idx];
+      resp->List[idx] = 0;
+    } 
 }
 
 /**
@@ -28,6 +42,7 @@ void destory_resp(ResPool* resp)
         for ( i=0; i<resp->res_max; ++i)
         {
              resp->delObj(i);
+             delCtl(resp, i);
         }
         SafeDelete(resp);
         resp = 0;

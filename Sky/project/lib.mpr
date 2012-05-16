@@ -6,9 +6,11 @@ appid=11
 version=1000
 visible=1
 cpu=3
+define=__SKY__,WIN32=0
+with_c_global=True
 vendor=sunrise
 description=sunrise
-include= ${MRPBUILDER_HOME}\..\include,${MRPBUILDER_HOME}\..\include\plugins
+include= ${MRPBUILDER_HOME}\..\include,${MRPBUILDER_HOME}\..\include\plugins,..\..\Tools
 output_format = lib
 config=mtk240,spr240
 
@@ -29,4 +31,15 @@ plat=spreadtrum
 file01 = ..\src\game.c
 file02 = ..\src\i18n.c
 file03 = ..\src\main.c
+file04 = ..\..\Tools\Pre.cpp
+file05 = ..\..\Tools\Configure.cpp
+file06 = ..\..\Tools\Container.cpp
+file07 = ..\..\Tools\Image.cpp
+file08 = ..\..\Tools\Page.cpp
+file09 = ..\..\Tools\Paint.cpp
+file10 = ..\..\Tools\ResPool.cpp
+file11 = ..\..\Tools\Tasks.cpp
+file12 = ..\..\Page\PreLoad.cpp
+file13 = ..\..\Page\Session1.cpp
+
 

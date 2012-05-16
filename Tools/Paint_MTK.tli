@@ -10,11 +10,14 @@
 static Paint* paint = 0;
 extern Graphics gpDC;
 
+static int drawImage(Img* pJImage, int iX, int iY);
+
 Paint* instance_paint()
 {
   if(0 == paint)
   {
     paint = (Paint*)SafeMalloc(sizeof(Paint));
+    paint->drawImage = drawImage;
     return paint;
   }
   return paint;
@@ -26,7 +29,12 @@ void destory_paint()
     SafeFree ((Paint*)paint);
 }
 
-bool Paint::drawImage(Img *pJImage, int iX, int iY, int iAchor)
+static int drawImage(Img* pJImage, int iX, int iY)
 {
-  return gpDC->drawImage(pJImage, iX, iY, iAchor);
+  if (pJImage == 0) return -1;
+  if (pJImage->type == BM_COPY)
+    return gpDC->drawImage((JImage*)pJImage->pImg, iX, iY, ACHOR_LT);
+  if (pJImage->type == BM_TRANSPARENT)
+    SxmDrawAlphaImage(gpDC, (SxmAlphaImage*)pJImage->pImg, iX, iY);
+  return 0;
 }

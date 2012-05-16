@@ -6,9 +6,10 @@
  */
 #include "Container.h"
 #include "Image.h"
-#include "File.h"
-#include <aeestdlib.h>
+//#include "File.h"
+//#include <aeestdlib.h>
 #include "Paint.h"
+#include <stdarg.h>
 
 ResPool *contPool = 0;
 
@@ -18,14 +19,14 @@ int init_obj(Cont *obj, const int, ...);
 /**
  * @def 定义变量
  */
-#define RES(O) Obj V_##O;
+#define RES(O,...) Obj *V_##O = 0;
 #include "cont.inc"
 #undef RES
 
 /**
  * @def 定义数组List
  */
-#define RES(O) (Obj*)&V_##O,
+#define RES(O,...) (Obj*) V_##O,
 Obj*  contList[]={
 #include "cont.inc"
 };
@@ -33,16 +34,16 @@ Obj*  contList[]={
 
 
 /**
- * @def 定义初始化函数
+ * @def 定义初始化函数,创建数据物件
  * 
  */
 #define RES(X, C, ...) \
 static int init_##X(void* p) {\
-  if(V_##X.obj == 0) {\
+  if(V_##X->obj == 0) {\
        Cont* obj = SafeNew Cont;\
        if(obj == 0) return 1; \
        obj->ID = ID_##X; \
-       V_##X.obj = obj; \
+       V_##X->obj = obj; \
        init_obj(obj, C, __VA_ARGS__);\
   }\
   return 0;\
@@ -51,13 +52,16 @@ static int init_##X(void* p) {\
 #undef RES
 
 /**
- * 补完整结构数据
+ * 补完整结构数据,创建控制物件
  */
 static void fix_relation()
 {
     int i = 0;
 #define CONT
-#define RES(X) \
+#define RES(X, ...) \
+    V_##X = SafeNew Obj; \
+    contList[i] = V_##X; \
+    contList[i]->obj = 0; \
     contList[i]->ID = i; \
     contList[i]->create = init_##X; \
     ++i;
@@ -69,7 +73,7 @@ static void fix_relation()
 #undef CONT
 
 /**
- * 删除对象
+ * 删除数据对象
  */
 static void delObj(int idx) 
 {
@@ -105,12 +109,13 @@ Cont* GetCont(int x)
 /** 显示容器,可供在onpaint中调用
  *
  */
-int ShowCont(int x)
+int ShowCont(int x, Page *pg)
 {
   Cont* btn = GetCont(x);
+  btn->page = pg;
   if (btn == 0) return -1;
-  //gpDC->drawImage(GETIMG(btn->curPic), btn->x, btn->y, 20);
-  PAINT->drawImage(GETIMG(btn->curPic), btn->x, btn->y, 20);
+  if (btn->curPic >= 0)
+      PAINT->drawImage(GETIMG(btn->curPic), btn->x, btn->y);
   return 0;
 }
 
@@ -190,18 +195,23 @@ bool NK(int)
   return true;
 }
 
-bool PointerPressedListen(int x, int y)
+bool PointerPressedListen(int x, int y, Page *pg)
 {
   for (int i = 0; i < contPool->res_max; ++i)
   {
     Cont* cont = GetCont(i);
-    if (cont->width == 0)
-      cont->width =  GETIMG(cont->picDown)->getWidth();
-    if (cont->height == 0)
-      cont->height =  GETIMG(cont->picDown)->getHeight();
-    if (cont == 0) continue;
-    if (cont->curPic != -1 && cont->picDown != -1)
+    if (cont == 0) continue; ///没取到按钮,继续
+
+    if (pg != cont->page) ///不是按钮所在页,继续
+      continue;
+
+    if (cont->curPic != -1 && cont->picDown != -1) ///换图
+    {
+      cont->width =  GETIMG(cont->picDown)->width;
+      cont->height =  GETIMG(cont->picDown)->height;
       cont->curPic = cont->picDown;
+    }
+
     if (cont->PointerPressed == 0) continue;
     if (1 == InButtonPic(x, y, 0, 0, cont))
     {
@@ -211,14 +221,20 @@ bool PointerPressedListen(int x, int y)
   return false;
 }
 
-bool PointerDraggedListen(int x, int y)
+bool PointerDraggedListen(int x, int y, Page *pg)
 {
   for (int i = 0; i < contPool->res_max; ++i)
   {
     Cont* cont = GetCont(i);
     if (cont == 0 )continue;
+
+    if (pg != cont->page)
+      continue;
+
     if (cont->curPic != -1 && cont->picOver != -1)
+    {
       cont->curPic = cont->picOver;
+    }
     if (cont->PointerDragged == 0) continue;
     if (1 == InButtonPic(x, y, 0, 0, cont))
     {
@@ -228,14 +244,23 @@ bool PointerDraggedListen(int x, int y)
   return false;
 }
 
-bool PointerReleasedListen(int x, int y)
+bool PointerReleasedListen(int x, int y, Page *pg)
 {
   for (int i = 0; i < contPool->res_max; ++i)
   {
     Cont* cont = GetCont(i);
     if (cont == 0) continue;
-    if (cont->curPic != -1 && cont->picUp != -1)
+
+    if (pg != cont->page)
+      continue;
+    
+    if (cont->curPic != -1 && cont->picUp != -1)///设置大小值
+    {
+      cont->width =  GETIMG(cont->picUp)->width;
+      cont->height =  GETIMG(cont->picUp)->height;
       cont->curPic = cont->picUp;
+    }
+
     if (cont->PointerReleased == 0) continue;
     if (1 == InButtonPic(x, y, 0, 0, cont))
     {
@@ -245,28 +270,44 @@ bool PointerReleasedListen(int x, int y)
   return false;
 }
 
-bool KeyReleasedListen(int keyCode)
+bool KeyReleasedListen(int keyCode, Page *pg)
 {
   for (int i = 0; i < contPool->res_max; ++i)
   {
     Cont* cont = GetCont(i);
     if (cont ==0) continue;
+
+    if (cont->page != pg)
+      continue;
+
     if (cont->curPic != -1 && cont->picUp != -1)
+    {
+      cont->width =  GETIMG(cont->picUp)->width;
+      cont->height =  GETIMG(cont->picUp)->height;
       cont->curPic = cont->picUp;
+    }
     if (cont->KeyReleased == 0) continue;
     cont->KeyReleased(keyCode);
   }
   return true;
 }
 
-bool KeyPressedListen(int keyCode)
+bool KeyPressedListen(int keyCode,Page *pg)
 {
   for (int i = 0; i < contPool->res_max; ++i)
   {
     Cont* cont = GetCont(i);
     if (cont == 0) continue;
+
+    if (pg != cont->page)
+      continue;
+    
     if (cont->curPic != -1 && cont->picDown != -1)
+    {
+      cont->width =  GETIMG(cont->picDown)->width;
+      cont->height =  GETIMG(cont->picDown)->height;
       cont->curPic = cont->picDown;
+    }
     if (cont->KeyPressed == 0) continue;
     cont->KeyPressed(keyCode);
   }

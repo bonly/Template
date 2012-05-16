@@ -8,11 +8,16 @@
 #define __PAINT_H__
 #include "pre.h"
 
-class Paint
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+typedef struct _Paint
 {
-public:
-  bool drawImage(Img* pJImage, int iX, int iY, int iAchor);
-};
+  int (*drawImage)(Img* pJImage, int iX, int iY);
+  int ScreenWidth;
+  int ScreenHeight;
+}Paint;
 
 void destory_paint(); //< สอนน
 
@@ -20,5 +25,9 @@ Paint* instance_paint();
 
 #define PAINT instance_paint()
 #define DELPAINT() destory_paint()
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

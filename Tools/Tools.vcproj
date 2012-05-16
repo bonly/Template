@@ -269,6 +269,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\types_MTK.h"
+			>
+		</File>
+		<File
 			RelativePath=".\types_SKY.h"
 			>
 		</File>

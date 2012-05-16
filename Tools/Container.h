@@ -7,6 +7,8 @@
 #ifndef __CONTAINER_H__
 #define __CONTAINER_H__
 #include "ResPool.h"
+#include "Page.h"
+
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -32,6 +34,7 @@ typedef bool (*pKeyEvn)(int); ///< 定义按键操作函数指针类型
 typedef struct _Cont
 {
   int ID;
+  Page* page;
   int x;
   int y;
   int width;
@@ -68,7 +71,7 @@ typedef struct _Cont
  * @enum 定义每个容器的ID号
  */
 enum RESCONT{
-  #define RES(X) ID_##X,
+  #define RES(X,...) ID_##X,
   #include "cont.inc"
   #undef RES
   RESCONT_MAX///< RESCONT_MAX
@@ -77,9 +80,10 @@ enum RESCONT{
 /**
  * @def 预定义变量实例
  */
-#define RES(X) extern Obj V_##X;
+#define RES(X,...) extern Obj *V_##X;
 #include "cont.inc"
 #undef RES
+
 
 extern ResPool *contPool; ///< 预定义容器池
 
@@ -95,7 +99,7 @@ extern ResPool *contPool; ///< 预定义容器池
 /**
  * 显示容器
 */
-int ShowCont(int x);
+int ShowCont(int x, Page *pg);
 
 Cont* GetCont(int x); ///< 取容器
 #undef CONT
@@ -137,11 +141,11 @@ int InButtonPic(int x, int y, int Xzero, int Yzero, KEY* btn, int deviation = 0)
 }
 #endif //cplusplus
 
-bool PointerPressedListen(int x, int y);
-bool PointerDraggedListen(int x, int y);
-bool PointerReleasedListen(int x, int y);
-bool KeyPressedListen(int keyCode);
-bool KeyReleasedListen(int keyCode);
+bool PointerPressedListen(int x, int y, Page *pg);
+bool PointerDraggedListen(int x, int y, Page *pg);
+bool PointerReleasedListen(int x, int y, Page *pg);
+bool KeyPressedListen(int keyCode, Page *pg);
+bool KeyReleasedListen(int keyCode, Page *pg);
 
 #ifdef __cplusplus
 }

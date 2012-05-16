@@ -25,5 +25,9 @@ bmp_mode=spreadtrum
 files01 = ..\resource\bmp\bk.bmp
 files02 = ..\resource\bmp\plane.bmp
 files03 = ..\resource\sound\bk.mid
-
+files04 = ..\resource\bmp\1_bg.bmp
+files05 = ..\resource\bmp\2_bg.bmp
+files06 = ..\resource\bmp\book_blue.bmp
+files07 = ..\resource\bmp\book_green.bmp
+files08 = ..\resource\bmp\book_red.bmp
 

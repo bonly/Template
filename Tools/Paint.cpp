@@ -5,9 +5,11 @@
  *  @author Bonly
  */
 #include "Paint.h"
-#if __MTK__
+#ifdef __MTK__
 #include "Paint_MTK.tli"
-#elif __SKY__
+#endif
+
+#ifdef __SKY__
 #include "Paint_SKY.tli"
 #endif
 

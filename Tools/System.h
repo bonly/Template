@@ -10,7 +10,7 @@
 #endif
 
 ///MTK平台
-#if __MTK__
+#ifdef __MTK__
 #if WIN32 
 #pragma comment(lib,"sxmFixFont.lib")
 #pragma comment(lib,"sxmHttp.lib")
@@ -21,14 +21,15 @@
 #include <jport.h>
 #include <jdefine.h>
 
-typedef JImage Img;
+#include "types_MTK.h"
+typedef T_IMG Img;
 #define EXIT(X) destroyApp(X)
 
 #endif //__MTK__
 
 
 ///斯凯平台
-#if __SKY__
+#ifdef __SKY__
 
 #ifdef __cplusplus
 extern "C"{

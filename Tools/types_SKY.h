@@ -13,8 +13,7 @@ typedef struct t_img
 	int32    dataLen;
 	int32    width;
 	int32    height;
-  int (*getWidth)();
-  int (*getHeight)();
+  int      tran;
 }T_IMG;
 
 //javaµÄÃªµã

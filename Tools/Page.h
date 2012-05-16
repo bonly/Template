@@ -15,7 +15,12 @@ struct _Page
     void (*onPaint)(); ///< 渲染函数指针
     void (*onDestory)(); ///< 释放资源函数指针
     void (*running)(); ///< 处理游戏逻辑的函数指针
+    
     bool (*OnPointerPressed)(int x, int y);
+    bool (*OnPointerDragged)(int x, int y);
+    bool (*OnPointerReleased)(int x, int y);
+    bool (*OnKeyReleased)(int keyCode);
+    bool (*OnKeyPressed)(int keyCode);
 };
 
 #endif /* PAGE_H_ */
